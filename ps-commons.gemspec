@@ -38,8 +38,4 @@ Gem::Specification.new do |spec|
   spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
   spec.require_paths = ['lib']
   # spec.extensions    = ['ext/ps_commons/extconf.rb']
-
-  spec.add_dependency 'k_log', '~> 0'
-  # spec.add_dependency 'k_type', '~> 0'
-  # spec.add_dependency 'k_util', '~> 0'
 end
