@@ -1,6 +1,7 @@
 KManager.action :bootstrap do
   action do
     application_name = 'ps-commons'
+    root_name = application_name.to_sym
 
     # Ruby Gem Bootstrap
     director = KDirector::Dsls::RubyGemDsl
@@ -12,9 +13,9 @@ KManager.action :bootstrap do
         ruby_version:               '2.7',
         application:                application_name,
         application_description:    'Common or reusable code used by PrintSpeak to help isolate our abstractions.',
-        application_lib_path:       application_name.to_s,
+        application_lib_path:       'ps/commons',
         application_lib_namespace:  'Ps::Commons',
-        namespaces:                 ['PsCommons'],
+        namespaces:                 ['Ps', 'Commons'],
         author:                     'David Cruwys',
         author_email:               'david@ideasmen.com.au',
         initial_semver:             '0.0.1',
@@ -54,7 +55,7 @@ KManager.action :bootstrap do
         run_command("gh repo edit -d \"#{dom[:application_description]}\"")
       end
       .package_json(
-        active: true,
+        active: false,
         name: :package_json,
         description: 'Set up the package.json file for semantic versioning'
       ) do
@@ -71,21 +72,23 @@ KManager.action :bootstrap do
         run_command("git add .; git commit -m 'chore: #{self.options.description.downcase}'; git push")
       end
       .blueprint(
-        active: false,
+        active: true,
         name: :opinionated,
         description: 'opinionated GEM files',
         on_exist: :write) do
 
         cd(:app)
 
-        add('bin/setup')
-        add('bin/console')
+        # add('bin/setup')
+        # add('bin/console')
 
-        add("lib/#{typed_dom.application}.rb"             , template_file: 'lib/applet_name.rb'         , dom: dom)
-        add("lib/#{typed_dom.application}/version.rb"     , template_file: 'lib/applet_name/version.rb' , dom: dom)
+        applet_path = typed_dom.namespaces.map { |ns| ns.downcase }.join('/')
+        
+        add("lib/#{applet_path}.rb"             , template_file: 'lib/applet_name.rb'         , dom: dom)
+        add("lib/#{applet_path}/version.rb"     , template_file: 'lib/applet_name/version.rb' , dom: dom)
     
         add('spec/spec_helper.rb')
-        add("spec/#{typed_dom.application}_spec.rb"       , template_file: 'spec/applet_name_spec.rb', dom: dom)
+        add("spec/#{applet_path}_spec.rb"       , template_file: 'spec/applet_name_spec.rb', dom: dom)
 
         add("#{typed_dom.application}.gemspec"            , template_file: 'applet_name.gemspec', dom: dom)
         add('Gemfile', dom: dom)
