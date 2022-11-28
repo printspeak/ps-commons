@@ -105,7 +105,7 @@ KManager.action :bootstrap do
         run_command("git add .; git commit -m 'chore: #{self.options.description.downcase}'; git push")
       end
       .blueprint(
-        active: true,
+        active: false,
         name: :ci_cd,
         description: 'github actions (CI/CD)',
         on_exist: :write) do
@@ -113,10 +113,10 @@ KManager.action :bootstrap do
         cd(:app)
 
         # run_command("gh secret set SLACK_WEBHOOK --body \"$SLACK_REPO_WEBHOOK\"")
-        # run_command("gh secret set GEM_HOST_API_KEY --body \"$GEM_HOST_API_KEY\"")
+        run_command("gh secret set GEM_HOST_API_KEY --body \"$GEM_HOST_API_KEY\"")
 
-        # add('.github/workflows/main.yml')
-        # add('.releaserc.json')
+        add('.github/workflows/main.yml')
+        add('.releaserc.json')
 
         run_command("git add .; git commit -m 'chore: #{self.options.description.downcase}'; git push")
       end
