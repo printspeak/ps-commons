@@ -15,7 +15,7 @@ class AnotherTable < ::ActiveRecord::Base
     t.string :name
   end
 
-  default_scope { order('another_table.some_created_at DESC NULLS LAST') }
+  default_scope { order(Arel.sql('another_table.some_created_at DESC NULLS LAST')) }
 end
 
 class MissingCallMethodQuery < Ps::Commons::Query
