@@ -39,6 +39,6 @@ Gem::Specification.new do |spec|
   spec.require_paths = ['lib']
   # spec.extensions    = ['ext/ps_commons/extconf.rb']
 
-  spec.add_dependency 'activerecord', '~> 4.2.11'
+  spec.add_dependency 'activerecord' # , '~> 4.2.11'
   spec.add_dependency 'sqlite3'
 end
