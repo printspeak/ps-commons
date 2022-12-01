@@ -57,19 +57,19 @@ RSpec.describe Ps::Commons::Query do
     end
 
     context 'when configured with valid scope' do
-      subject { run_query.to_sql.squeeze(' ') }
+      subject { run_query.to_sql.squeeze(' ').gsub('"', '').gsub('(', '').gsub(')', '') }
 
       context 'with scope passed in via query' do
         context 'when standard default scope' do
           let(:run_query) { NoScopeQuery.query_as_scope(SomeTable.all, **params) }
 
-          it { is_expected.to eq('SELECT "some_tables".* FROM "some_tables"') }
+          it { is_expected.to eq('SELECT some_tables.* FROM some_tables') }
         end
 
         context 'when modified default scope' do
           let(:run_query) { NoScopeQuery.query_as_scope(AnotherTable.all, **params) }
 
-          it { is_expected.to eq('SELECT "another_tables".* FROM "another_tables" ORDER BY another_table.some_created_at DESC NULLS LAST') }
+          it { is_expected.to eq('SELECT another_tables.* FROM another_tables ORDER BY another_table.some_created_at DESC NULLS LAST') }
         end
       end
 
@@ -77,13 +77,13 @@ RSpec.describe Ps::Commons::Query do
         context 'when using :symbol (model name)' do
           let(:run_query) { SymbolDrivenQuery.query_as_scope(**params) }
 
-          it { is_expected.to eq('SELECT "some_tables".* FROM "some_tables"') }
+          it { is_expected.to eq('SELECT some_tables.* FROM some_tables') }
         end
 
         context 'when using lambda' do
           let(:run_query) { LambdaDrivenQuery.query_as_scope(**params) }
 
-          it { is_expected.to eq('SELECT "some_tables".* FROM "some_tables" WHERE ("some_tables"."os" IS NOT NULL)') }
+          it { is_expected.to eq('SELECT some_tables.* FROM some_tables WHERE some_tables.os IS NOT NULL') }
         end
       end
     end
