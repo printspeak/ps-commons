@@ -2,10 +2,18 @@
 
 class SomeTable < ::ActiveRecord::Base
   establish_connection(adapter: 'sqlite3', database: ':memory:')
+
+  connection.create_table :some_tables do |t|
+    t.string :name
+  end
 end
 
 class AnotherTable < ::ActiveRecord::Base
   establish_connection(adapter: 'sqlite3', database: ':memory:')
+
+  connection.create_table :another_tables do |t|
+    t.string :name
+  end
 
   default_scope { order('another_table.some_created_at DESC NULLS LAST') }
 end

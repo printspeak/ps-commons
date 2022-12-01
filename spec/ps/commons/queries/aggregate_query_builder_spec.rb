@@ -1,17 +1,11 @@
 # frozen_string_literal: true
 
-# db = SQLite3::Database.new "test.db"
-
-# # Create a table
-# rows = db.execute <<-SQL
-# CREATE TABLE IF NOT EXISTS addresses (
-#     name varchar(30),
-#     val int
-#   );
-# SQL
-
 class Address < ::ActiveRecord::Base
   establish_connection(adapter: 'sqlite3', database: ':memory:')
+
+  connection.create_table :addresses do |t|
+    t.string :name
+  end
 end
 
 RSpec.describe Ps::Commons::AggregateQueryBuilder do
@@ -28,16 +22,6 @@ RSpec.describe Ps::Commons::AggregateQueryBuilder do
   end
 
   describe '#add' do
-    before do
-      Address.connection.create_table :addresses do |t|
-        t.string :name
-      end
-    end
-
-    after do
-      Address.connection.drop_table :addresses
-    end
-
     let(:name) { :test }
     let(:query) { Address.unscoped.all.order(:name) }
     let(:clear_order) { true }
