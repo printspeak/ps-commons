@@ -2,7 +2,7 @@
 
 RSpec.describe Ps::Commons do
   it 'has a version number' do
-    expect(Ps::Commons::VERSION).not_to be nil
+    expect(Ps::Commons::VERSION).not_to be_nil
   end
 
   it 'has a standard error' do

@@ -2,6 +2,10 @@ inherit_mode:
   merge:
     - Exclude # see: https://stackoverflow.com/a/70818366/473923
     - AllowedNames
+require:
+  - rubocop-rspec
+  - rubocop-rake
+
 AllCops:
   TargetRubyVersion: 2.7
   DisplayCopNames: true
@@ -66,17 +70,18 @@ Naming/VariableNumber:
 Naming/MethodParameterName:
   AllowedNames:
     - as
+    - a
+    - b
+    - ab
 Style/EmptyMethod:    
   Exclude:
     - "**/spec/**/*"
 Metrics/ParameterLists:
   Exclude:
     - "**/spec/**/*"
-Layout/EmptyLineBetweenDefs:
-  Exclude:
-    - "**/spec/**/*"
+    - "lib/ps/commons/queries/query.rb"
 
-Style/OpenStructUse:
+Layout/EmptyLineBetweenDefs:
   Exclude:
     - "**/spec/**/*"
 
@@ -89,5 +94,26 @@ Style/AccessorGrouping:
 
 Layout/SpaceBeforeComma:
   Enabled: false
-# My Preferences - End
 
+Style/OpenStructUse:
+  Exclude:
+    - "**/spec/**/*"
+
+# RSpec Cops
+RSpec/NestedGroups:
+  Max: 5
+
+RSpec/FilePath:
+  Exclude:
+    - "**/spec/**/*"
+
+RSpec/NamedSubject:
+  Exclude:
+    - "**/spec/**/*"
+
+RSpec/ExampleLength:
+  Exclude:
+    - "**/spec/**/*"
+
+RSpec/MultipleMemoizedHelpers:
+  Max: 5

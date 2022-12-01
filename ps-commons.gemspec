@@ -38,4 +38,7 @@ Gem::Specification.new do |spec|
   spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
   spec.require_paths = ['lib']
   # spec.extensions    = ['ext/ps_commons/extconf.rb']
+
+  spec.add_dependency 'activerecord', '4.2.11.20'
+  spec.add_dependency 'sqlite3'
 end

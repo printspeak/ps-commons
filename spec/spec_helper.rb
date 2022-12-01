@@ -3,10 +3,13 @@
 require 'pry'
 require 'bundler/setup'
 require 'simplecov'
+require 'sqlite3'
 
 SimpleCov.start
 
 require 'ps/commons'
+
+# ActiveRecord::Base.establish_connection(adapter: 'sqlite3', database: ':memory:')
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure

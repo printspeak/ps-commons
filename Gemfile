@@ -15,6 +15,7 @@ group :development, :test do
   gem 'rubocop'
   gem 'rubocop-rake', require: false
   gem 'rubocop-rspec', require: false
+  gem 'sqlite3', '~> 1.4.2' # seems to be the correct version for Rails 4 Active Record
 end
 
 group :test do
