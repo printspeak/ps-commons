@@ -22,7 +22,7 @@ module Ps
       # @param [TRUE/FALSE] clear_order should the trailing ORDER BY be removed from the query, defaults to true
       def add(name, query, clear_order: true)
         count_query = query.clone
-        count_query.reorder!('') if clear_order
+        count_query.reorder!(Arel.sql('')) if clear_order
         count_query = count_query.select(Arel.sql("'#{name}' as agg_name, count(*) as agg_count"))
 
         raw_sql = count_query.to_sql
