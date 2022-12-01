@@ -23,7 +23,7 @@ module Ps
       def add(name, query, clear_order: true)
         count_query = query.clone
         count_query.reorder!('') if clear_order
-        count_query = count_query.select("'#{name}' as agg_name, count(*) as agg_count")
+        count_query = count_query.select(Arel.sql("'#{name}' as agg_name, count(*) as agg_count"))
 
         raw_sql = count_query.to_sql
 
