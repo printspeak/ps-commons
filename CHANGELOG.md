@@ -1,3 +1,11 @@
+## [0.2.1](https://github.com/printspeak/ps-commons/compare/v0.2.0...v0.2.1) (2022-12-02)
+
+
+### Bug Fixes
+
+* fixe param issue for ruby 3 ([e137128](https://github.com/printspeak/ps-commons/commit/e137128546f22f3d5c9eb169349e42f4f4fe0623))
+* remove rubygem publish, test on ruby 3 ([437538d](https://github.com/printspeak/ps-commons/commit/437538dfe76262b79eb193c9733b99b9c8696a6a))
+
 # [0.2.0](https://github.com/printspeak/ps-commons/compare/v0.1.1...v0.2.0) (2022-12-01)
 
 
