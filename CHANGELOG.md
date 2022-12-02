@@ -1,3 +1,10 @@
+## [0.2.5](https://github.com/printspeak/ps-commons/compare/v0.2.4...v0.2.5) (2022-12-02)
+
+
+### Bug Fixes
+
+* test dynamic spec version [#4](https://github.com/printspeak/ps-commons/issues/4) ([5f76471](https://github.com/printspeak/ps-commons/commit/5f76471366ca107de86c8201e0cd1e2a590e43d2))
+
 ## [0.2.4](https://github.com/printspeak/ps-commons/compare/v0.2.3...v0.2.4) (2022-12-02)
 
 
