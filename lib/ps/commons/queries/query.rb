@@ -107,12 +107,6 @@ module Ps
         @aggregate_queries ||= AggregateQueryBuilder.new
       end
 
-      # def debug
-      #   log.section_heading("opts")
-      #   opts.each_pair { |key, value| log.kv key, value }
-      #   ""
-      # end
-
       # These debug helpers get used when comparing SQL from an old controller to the new sql in a query class.
       class << self
         # def log_sql(group, name, active_record)
