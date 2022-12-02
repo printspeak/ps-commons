@@ -14,7 +14,7 @@
     [
       "@klueless-js/semantic-release-rubygem",
       {
-        "gemPublish": true
+        "gemPublish": false
       }
     ],
     [
