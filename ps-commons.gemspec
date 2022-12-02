@@ -5,7 +5,7 @@ require_relative 'lib/ps/commons/version'
 Gem::Specification.new do |spec|
   spec.required_ruby_version  = '>= 2.7'
   spec.name                   = 'ps-commons'
-  spec.version                = '0.2.2' # Ps::Commons::VERSION
+  spec.version                = Ps::Commons::VERSION
   spec.authors                = ['David Cruwys']
   spec.email                  = ['david@ideasmen.com.au']
 
