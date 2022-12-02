@@ -21,7 +21,7 @@ module Ps
         #
         # Use this technique when the query is producing more that one scope
         def query(scope = nil, **opts)
-          new(scope, opts).tap(&:call)
+          new(scope, **opts).tap(&:call)
         end
 
         # Run the query and return an ActiveRecord scope

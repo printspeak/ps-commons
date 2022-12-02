@@ -29,6 +29,7 @@ mkmf.log
 
 # Ruby Version
 .ruby-version
+.tool-versions
 
 # Environment File
 .env
