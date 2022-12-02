@@ -39,7 +39,7 @@ RSpec.describe Ps::Commons::Query do
   let(:params) { {} }
   let(:scope) { nil }
 
-  describe '#query abc' do
+  describe '#query' do
     subject { run_query }
 
     context 'when misconfigured' do
