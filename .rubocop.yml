@@ -98,6 +98,7 @@ Layout/SpaceBeforeComma:
 Style/OpenStructUse:
   Exclude:
     - "**/spec/**/*"
+    - "lib/ps/commons/presenters/base_presenter.rb"
 
 # RSpec Cops
 RSpec/NestedGroups:
