@@ -103,6 +103,7 @@ module Ps
           @contract.instance_eval(&block) if block_given?
           @contract
         end
+        alias options contract
 
         def outputs(*outputs, required: false)
           outputs.each do |output|
@@ -120,26 +121,6 @@ module Ps
         def required_outputs
           @required_outputs ||= []
         end
-
-        # def inherited(subclass)
-        #   interceptor = const_set("#{subclass.name.split('::').last}Interceptor", Module.new)
-
-        #   # if %w[FakePresenter BadOutputsFakePresenter].include?(subclass.to_s) # .include?("Fake")
-        #   #   puts "subclass: #{subclass}"
-        #   #   puts "interceptor: #{interceptor}"
-        #   # end
-
-        #   interceptor.define_method(:initialize) do |*args, **opts|
-        #     # puts 'defined method initialize' if subclass.to_s != 'FakePresenter'
-        #     # puts 'defined method initialize - before super' if subclass.to_s != 'FakePresenter'
-        #     @required_outputs = self.class.superclass.required_outputs | self.class.required_outputs
-        #     super(*args, **opts)
-        #     # puts 'defined method initialize - after super' if subclass.to_s != 'FakePresenter'
-        #   end
-
-        #   subclass.prepend(interceptor)
-        #   super
-        # end
       end
     end
   end

@@ -5,33 +5,6 @@ class FakePresenter < Ps::Commons::BasePresenter
   outputs :optional_output
 end
 
-class GoodWithInitializerFakePresenter < FakePresenter
-  def initialize(something)
-    # puts "inside GoodWithInitializerFakePresenter#initialize - before super"
-    super
-    # puts "inside GoodWithInitializerFakePresenter#initialize"
-    @something = something
-  end
-
-  def call
-    # puts "inside GoodWithInitializerFakePresenter#call"
-    self.required_output = @something
-  end
-end
-
-class GoodWithArgContractFakePresenter < FakePresenter
-  contract do
-    attribute :something
-    attribute :page_size, :int, default: 20
-  end
-
-  def call
-    # puts 'inside GoodWithArgContractFakePresenter#call'
-    self.required_output = opts.something
-    self.optional_output = opts.page_size
-  end
-end
-
 RSpec.describe Ps::Commons::BasePresenter do
   describe '#initialize' do
     subject { described_class.new }
@@ -42,45 +15,91 @@ RSpec.describe Ps::Commons::BasePresenter do
   describe '#present' do
     subject { presenter.present }
 
-    context 'without positional arguments' do
+    context 'without any arguments' do
       let(:presenter) do
         Class.new(FakePresenter) do
           def call
             self.optional_output = 'something'
-            self.required_output = optional_output
+            self.required_output = 'must be set'
           end
         end
       end
 
       it { is_expected.to be_a(OpenStruct) }
-      it { is_expected.to be_a(OpenStruct).and have_attributes(required_output: 'something', optional_output: 'something') }
+      it { is_expected.to be_a(OpenStruct).and have_attributes(required_output: 'must be set', optional_output: 'something') }
     end
 
     context 'with positional arguments' do
-      # defined method initialize
-      # defined method initialize - before super
-      # defined method initialize - after super
-      # defined method call - before super
-      # defined method call - after super
-      # defined method call - after validate_outputs
-      subject { GoodWithInitializerFakePresenter.present('something') }
+      subject { presenter.present('Bob', 'Marley') }
 
-      it { is_expected.to be_a(OpenStruct).and have_attributes(required_output: 'something') }
+      let(:presenter) do
+        Class.new(FakePresenter) do
+          def initialize(first_name, last_name)
+            super
+            @first_name = first_name
+            @last_name = last_name
+          end
+
+          def call
+            self.required_output = "#{@first_name} #{@last_name}"
+          end
+        end
+      end
+
+      it { is_expected.to be_a(OpenStruct).and have_attributes(required_output: 'Bob Marley') } # , optional_output: nil).  THIS DOES NOT WORK, THERE is BUG that needs to be handled via class inheritance
       it { expect(subject.optional_output).to be_nil }
     end
 
-    context 'with contractual options' do
-      subject { GoodWithArgContractFakePresenter.present(something: 'something') }
+    context 'with an options contract' do
+      subject { presenter.present(critter1: 'Fox', critter2: 'Dog') }
+
+      let(:presenter) do
+        Class.new(FakePresenter) do
+          contract do
+            attribute :critter1
+            attribute :critter2
+            attribute :page_size, :int, default: 20
+          end
+
+          def call
+            self.optional_output = opts.page_size
+            self.required_output = "The quick brow #{opts.critter1} jumped over the lazy #{opts.critter2}"
+          end
+        end
+      end
 
       it do
         expect(subject)
           .to be_a(OpenStruct)
-          .and have_attributes(required_output: 'something')
+          .and have_attributes(required_output: 'The quick brow Fox jumped over the lazy Dog')
           .and have_attributes(optional_output: 20)
       end
     end
 
-    context 'when parents required output property is not set' do
+    context 'with options (instead of contract)' do
+      subject { presenter.present(name: 'Ben') }
+
+      let(:presenter) do
+        Class.new(FakePresenter) do
+          options do
+            attribute :name
+            attribute :age, :int, default: 18
+          end
+
+          def call
+            self.required_output = "#{opts.name} is #{opts.age} years old"
+          end
+        end
+      end
+
+      it do
+        expect(subject)
+          .to be_a(OpenStruct)
+          .and have_attributes(required_output: 'Ben is 18 years old')
+      end
+    end
+
+    context 'when parent -> required output property is not set' do
       let(:presenter) do
         Class.new(FakePresenter) do
           def call
