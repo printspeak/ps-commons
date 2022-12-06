@@ -5,14 +5,6 @@ class FakePresenter < Ps::Commons::BasePresenter
   outputs :optional_output
 end
 
-class GoodFakePresenter < FakePresenter
-  def call
-    puts 'GoodFakePresenter#call'
-    self.optional_output = 'something'
-    self.required_output = optional_output
-  end
-end
-
 class GoodWithInitializerFakePresenter < FakePresenter
   def initialize(something)
     # puts "inside GoodWithInitializerFakePresenter#initialize - before super"
@@ -34,22 +26,9 @@ class GoodWithArgContractFakePresenter < FakePresenter
   end
 
   def call
-    puts 'inside GoodWithArgContractFakePresenter#call'
+    # puts 'inside GoodWithArgContractFakePresenter#call'
     self.required_output = opts.something
     self.optional_output = opts.page_size
-  end
-end
-
-class BadOutputsFakePresenter < FakePresenter
-  # call method is missing the required_output
-  def call
-    self.optional_output = 'something'
-  end
-end
-
-class BadCallFakePresenter < FakePresenter
-  def present
-    self.optional_output = 'something'
   end
 end
 
@@ -60,27 +39,18 @@ RSpec.describe Ps::Commons::BasePresenter do
     it { is_expected.not_to be_nil }
   end
 
-  # Sequential flow including base class in this example FakePresenter
-  # when good path
-  #   without positional arguments
-  # defined method initialize: GoodFakePresenter, GoodFakePresenter
-  # defined method initialize - before super: GoodFakePresenter, GoodFakePresenter
-  # defined method initialize: GoodFakePresenter, FakePresenter
-  # defined method initialize - before super: GoodFakePresenter, FakePresenter
-  # defined method initialize - after super: GoodFakePresenter, FakePresenter
-  # defined method initialize - after super: GoodFakePresenter, GoodFakePresenter
-  # defined method call - before super: GoodFakePresenter, GoodFakePresenter
-  # defined method call - after super: GoodFakePresenter, GoodFakePresenter
-  # defined method call - after validate_outputs: GoodFakePresenter, GoodFakePresenter
-  context 'when good path' do
+  describe '#present' do
+    subject { presenter.present }
+
     context 'without positional arguments' do
-      # defined method initialize
-      # defined method initialize - before super
-      # defined method initialize - after super
-      # defined method call - before super
-      # defined method call - after super
-      # defined method call - after validate_outputs
-      subject { GoodFakePresenter.present }
+      let(:presenter) do
+        Class.new(FakePresenter) do
+          def call
+            self.optional_output = 'something'
+            self.required_output = optional_output
+          end
+        end
+      end
 
       it { is_expected.to be_a(OpenStruct) }
       it { is_expected.to be_a(OpenStruct).and have_attributes(required_output: 'something', optional_output: 'something') }
@@ -109,26 +79,21 @@ RSpec.describe Ps::Commons::BasePresenter do
           .and have_attributes(optional_output: 20)
       end
     end
-  end
 
-  context 'when bad path' do
-    context 'because of bad outputs' do
-      # defined method initialize
-      # defined method initialize - before super
-      # defined method initialize - after super
-      # defined method call - before super
-      # defined method call - after super
-      subject { BadOutputsFakePresenter.present }
+    context 'when parents required output property is not set' do
+      let(:presenter) do
+        Class.new(FakePresenter) do
+          def call
+            self.optional_output = 'something'
+          end
+        end
+      end
 
-      fit { expect { subject }.to raise_error(ArgumentError) }
+      it { expect { subject }.to raise_error(ArgumentError) }
     end
 
-    context 'because missing call method' do
-      # defined method initialize
-      # defined method initialize - before super
-      # defined method initialize - after super
-      # defined method call - before super
-      subject { BadCallFakePresenter.present }
+    context 'when call method is missing' do
+      let(:presenter) { Class.new(FakePresenter) }
 
       it { expect { subject }.to raise_error(NoMethodError) }
     end

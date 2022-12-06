@@ -40,5 +40,6 @@ Gem::Specification.new do |spec|
   # spec.extensions    = ['ext/ps_commons/extconf.rb']
 
   spec.add_dependency 'activerecord'
+  spec.add_dependency 'activesupport'
   spec.add_dependency 'sqlite3'
 end
