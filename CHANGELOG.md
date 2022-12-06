@@ -1,3 +1,10 @@
+## [0.2.6](https://github.com/printspeak/ps-commons/compare/v0.2.5...v0.2.6) (2022-12-06)
+
+
+### Bug Fixes
+
+* add presenters and unit tests ([f80cbcb](https://github.com/printspeak/ps-commons/commit/f80cbcb7007944c75d121e24fa9cf3f6d2bc813c))
+
 ## [0.2.5](https://github.com/printspeak/ps-commons/compare/v0.2.4...v0.2.5) (2022-12-02)
 
 
