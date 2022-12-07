@@ -1,3 +1,11 @@
+## [0.2.7](https://github.com/printspeak/ps-commons/compare/v0.2.6...v0.2.7) (2022-12-07)
+
+
+### Bug Fixes
+
+* add hierachy based required options to presenter ([aa7ec4c](https://github.com/printspeak/ps-commons/commit/aa7ec4cc0d6a8567897a4ec1e719cfa33a40a5da))
+* add options as an alias to contract ([230e963](https://github.com/printspeak/ps-commons/commit/230e963cd229511223dae9dff034501885bf4a5b))
+
 ## [0.2.6](https://github.com/printspeak/ps-commons/compare/v0.2.5...v0.2.6) (2022-12-06)
 
 
