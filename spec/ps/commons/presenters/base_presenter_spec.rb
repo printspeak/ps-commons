@@ -12,6 +12,63 @@ RSpec.describe Ps::Commons::BasePresenter do
     it { is_expected.not_to be_nil }
   end
 
+  describe '#output_contract' do
+    subject { presenter.new.output_contract }
+
+    context 'when optional and required outputs are defined' do
+      let(:presenter) { FakePresenter }
+
+      it { is_expected.to include(required_output: { name: :required_output, required: true }, optional_output: { name: :optional_output, required: false }) }
+    end
+
+    context 'when optional is redefined to required' do
+      let(:presenter) do
+        Class.new(FakePresenter) do
+          outputs :optional_output, required: true
+        end
+      end
+
+      it { is_expected.to include(required_output: { name: :required_output, required: true }, optional_output: { name: :optional_output, required: true }) }
+    end
+
+    context 'when additional outputs are added' do
+      let(:presenter) do
+        Class.new(FakePresenter) do
+          outputs :a, :b
+          outputs :c, required: true
+        end
+      end
+
+      it do
+        expect(subject).to include(
+          required_output: { name: :required_output, required: true },
+          optional_output: { name: :optional_output, required: false },
+          a: { name: :a, required: false },
+          b: { name: :b, required: false },
+          c: { name: :c, required: true }
+        )
+      end
+    end
+
+    context 'when deep nested classes are used' do
+      let(:presenter) do
+        child = Class.new(FakePresenter)
+
+        Class.new(child) do
+          outputs :deep_child
+        end
+      end
+
+      it do
+        expect(subject).to include(
+          required_output: { name: :required_output, required: true },
+          optional_output: { name: :optional_output, required: false },
+          deep_child: { name: :deep_child, required: false }
+        )
+      end
+    end
+  end
+
   describe '#present' do
     subject { presenter.present }
 
@@ -46,7 +103,10 @@ RSpec.describe Ps::Commons::BasePresenter do
         end
       end
 
-      it { is_expected.to be_a(OpenStruct).and have_attributes(required_output: 'Bob Marley') } # , optional_output: nil).  THIS DOES NOT WORK, THERE is BUG that needs to be handled via class inheritance
+      it {
+        expect(subject).to be_a(OpenStruct).and have_attributes(required_output: 'Bob Marley', optional_output: nil)
+      } # , optional_output: nil).  THIS DOES NOT WORK, THERE is BUG that needs to be handled via class inheritance
+
       it { expect(subject.optional_output).to be_nil }
     end
 
@@ -73,29 +133,6 @@ RSpec.describe Ps::Commons::BasePresenter do
           .to be_a(OpenStruct)
           .and have_attributes(required_output: 'The quick brow Fox jumped over the lazy Dog')
           .and have_attributes(optional_output: 20)
-      end
-    end
-
-    context 'with options (instead of contract)' do
-      subject { presenter.present(name: 'Ben') }
-
-      let(:presenter) do
-        Class.new(FakePresenter) do
-          options do
-            attribute :name
-            attribute :age, :int, default: 18
-          end
-
-          def call
-            self.required_output = "#{opts.name} is #{opts.age} years old"
-          end
-        end
-      end
-
-      it do
-        expect(subject)
-          .to be_a(OpenStruct)
-          .and have_attributes(required_output: 'Ben is 18 years old')
       end
     end
 
