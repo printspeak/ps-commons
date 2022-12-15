@@ -7,6 +7,7 @@ require 'ps/commons/contract'
 require 'ps/commons/queries/aggregate_query_builder'
 require 'ps/commons/queries/query'
 require 'ps/commons/presenters/base_presenter'
+require 'ps/commons/commands/base_command'
 
 module Ps
   module Commons

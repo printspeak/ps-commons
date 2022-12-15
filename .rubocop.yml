@@ -98,7 +98,9 @@ Layout/SpaceBeforeComma:
 Style/OpenStructUse:
   Exclude:
     - "**/spec/**/*"
+    - "lib/ps/commons/queries/query.rb"
     - "lib/ps/commons/presenters/base_presenter.rb"
+    - "lib/ps/commons/commands/base_command.rb"
 
 # RSpec Cops
 RSpec/NestedGroups:

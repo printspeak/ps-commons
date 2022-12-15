@@ -58,14 +58,12 @@ module Ps
         end
       end
 
-      # rubocop:disable Style/OpenStructUse
       def initialize(scope, **opts)
         @contract = self.class.contract
         @scope = scope || self.class.scope
         @opts  = OpenStruct.new(opts)
         raise ArgumentError, 'scope is required' if @scope.nil?
       end
-      # rubocop:enable Style/OpenStructUse
 
       def call
         raise NoMethodError, 'implement the call method in your query object'
