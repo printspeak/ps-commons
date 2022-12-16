@@ -1,3 +1,17 @@
+# [0.3.0](https://github.com/printspeak/ps-commons/compare/v0.2.7...v0.3.0) (2022-12-16)
+
+
+### Bug Fixes
+
+* cops ([9719f71](https://github.com/printspeak/ps-commons/commit/9719f7142bb308fd35d889dad254003391f7800c))
+* cops ([6e08ea7](https://github.com/printspeak/ps-commons/commit/6e08ea736f6e26b86e848d529db8d7f15884cd1b))
+
+
+### Features
+
+* add required validation to contract, add contract validation and command success to base_command ([c994c03](https://github.com/printspeak/ps-commons/commit/c994c032720e9573ef3dbdf31622f8927b8ec23d))
+* add support for commands ([787f1ac](https://github.com/printspeak/ps-commons/commit/787f1ac5a9ba7a1f77f0eb97feaf528c1510a9cb))
+
 ## [0.2.7](https://github.com/printspeak/ps-commons/compare/v0.2.6...v0.2.7) (2022-12-07)
 
 
