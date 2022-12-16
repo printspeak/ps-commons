@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class SomeTable < ::ActiveRecord::Base
+class SomeTable < ActiveRecord::Base
   establish_connection(adapter: 'sqlite3', database: ':memory:')
 
   connection.create_table :some_tables do |t|
@@ -8,7 +8,7 @@ class SomeTable < ::ActiveRecord::Base
   end
 end
 
-class AnotherTable < ::ActiveRecord::Base
+class AnotherTable < ActiveRecord::Base
   establish_connection(adapter: 'sqlite3', database: ':memory:')
 
   connection.create_table :another_tables do |t|
