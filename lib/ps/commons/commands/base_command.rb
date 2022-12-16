@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 module Ps
+  # Common module contains base classes and modules used by Printspeak
   module Commons
     # Use commands (or interactors) for any database or process action
     #
@@ -10,6 +11,50 @@ module Ps
     class BaseCommand
       attr_reader :opts
       attr_accessor :contract
+      attr_accessor :success
+
+      def initialize(**opts)
+        @contract = self.class.contract
+        @opts = OpenStruct.new(opts)
+        @success = false
+        @valid = false
+      end
+
+      def call
+        raise NoMethodError, 'implement the call method in your command object'
+      end
+
+      def around_call
+        contract.apply(opts)
+        call if contract.valid?
+      end
+
+      def validation_errors
+        contract.errors
+      end
+
+      # Is the command successful?
+      #
+      # Example:
+      # some = SomeModel.create(name: 'John')
+      # self.success = some.save
+      #
+      # @return [Boolean]
+      def success?
+        success == true
+      end
+
+      # private
+
+      # def check_contract
+      #   if contract.nil?
+      #     @valid = true
+      #     return
+      #   end
+
+      #   contract.apply(opts)
+      #   @valid = contract.valid?
+      # end
 
       class << self
         # Run the command
@@ -24,20 +69,6 @@ module Ps
           @contract.instance_eval(&block) if block_given?
           @contract
         end
-      end
-
-      def initialize(**opts)
-        @contract = self.class.contract
-        @opts = OpenStruct.new(opts)
-      end
-
-      def call
-        raise NoMethodError, 'implement the call method in your command object'
-      end
-
-      def around_call
-        contract&.apply(opts)
-        call
       end
     end
   end
