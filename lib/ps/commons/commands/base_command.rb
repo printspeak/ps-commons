@@ -11,13 +11,14 @@ module Ps
     class BaseCommand
       attr_reader :opts
       attr_accessor :contract
+      attr_reader :contract_evaluator
       attr_accessor :success
 
       def initialize(**opts)
         @contract = self.class.contract
+        @contract_evaluator = nil
         @opts = OpenStruct.new(opts)
         @success = false
-        @valid = false
       end
 
       def call
@@ -25,39 +26,32 @@ module Ps
       end
 
       def around_call
-        contract.apply(opts)
-        call if contract.valid?
+        @contract_evaluator = contract.apply(opts)
+        call if valid?
+      end
+
+      def valid?
+        contract_evaluator.valid?
       end
 
       def validation_errors
-        contract.errors
+        contract_evaluator.errors
       end
 
       # Is the command successful?
       #
       # Example:
-      # some = SomeModel.create(name: 'John')
-      # self.success = some.save
+      # def call
+      #   some = SomeModel.create(name: 'John')
+      #   self.success = some.save
+      # end
       #
       # @return [Boolean]
-      def success?
+      def successful?
         success == true
       end
 
-      # private
-
-      # def check_contract
-      #   if contract.nil?
-      #     @valid = true
-      #     return
-      #   end
-
-      #   contract.apply(opts)
-      #   @valid = contract.valid?
-      # end
-
       class << self
-        # Run the command
         def run(**opts)
           new(**opts).tap(&:around_call)
         end

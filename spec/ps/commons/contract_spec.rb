@@ -1,15 +1,15 @@
 # frozen_string_literal: true
 
 RSpec.describe Ps::Commons::Contract do
-  let(:instance) { described_class.new }
+  let(:contract) { described_class.new }
 
   shared_context 'with attributes' do
     before do
-      instance.attribute(:search, :string)
-      instance.attribute(:some_object)
-      instance.attribute(:count, :int, default: 0)
-      instance.attribute(:order, :symbol, default: :asc)
-      instance.attribute(:name, :string, required: true)
+      contract.attribute(:search, :string)
+      contract.attribute(:some_object)
+      contract.attribute(:count, :int, default: 0)
+      contract.attribute(:order, :symbol, default: :asc)
+      contract.attribute(:name, :string, required: true)
     end
   end
 
@@ -22,7 +22,7 @@ RSpec.describe Ps::Commons::Contract do
   end
 
   describe '#attribute' do
-    subject { instance.attributes }
+    subject { contract.attributes }
 
     include_context 'with attributes'
 
@@ -39,27 +39,31 @@ RSpec.describe Ps::Commons::Contract do
   end
 
   describe '#apply' do
-    subject { opts }
-
     include_context 'with attributes'
 
-    before { instance.apply(opts) }
+    let(:evaluator_apply) { contract.apply(opts) }
 
     context 'when opts are not provided -> apply defaults' do
       let(:opts) { OpenStruct.new }
 
-      it { is_expected.to have_attributes(count: 0, order: :asc) }
-      it { is_expected.not_to respond_to(:search) }
-      it { is_expected.not_to respond_to(:some_object) }
+      describe 'did opts change?' do
+        subject { opts }
+
+        before { evaluator_apply }
+
+        it { is_expected.to have_attributes(count: 0, order: :asc) }
+        it { is_expected.not_to respond_to(:search) }
+        it { is_expected.not_to respond_to(:some_object) }
+      end
 
       describe '#valid?' do
-        subject { instance.valid? }
+        subject { evaluator_apply.valid? }
 
         it { is_expected.to be false }
       end
 
       describe '#errors' do
-        subject { instance.errors }
+        subject { evaluator_apply.errors }
 
         it { is_expected.to include('name is required') }
       end
@@ -76,25 +80,37 @@ RSpec.describe Ps::Commons::Contract do
         )
       end
 
-      it do
-        expect(subject).to have_attributes(
-          search: 'abc',
-          some_object: {},
-          count: 123,
-          order: :desc,
-          name: 'John'
-        )
+      describe 'did opts change?' do
+        subject { opts }
+
+        before { evaluator_apply }
+
+        it do
+          expect(subject).to have_attributes(
+            search: 'abc',
+            some_object: {},
+            count: 123,
+            order: :desc,
+            name: 'John'
+          )
+        end
       end
 
       describe '#valid?' do
-        subject { instance.valid? }
+        subject { evaluator_apply.valid? }
 
         it { is_expected.to be true }
+      end
+
+      describe '#errors' do
+        subject { evaluator_apply.errors }
+
+        it { is_expected.to be_empty }
       end
     end
 
     context 'when opts need type conversion' do
-      # Currently supports int and symbol, add more as needed
+      # Currently supports int and symbol, you can add more as needed
       let(:opts) do
         OpenStruct.new(
           count: '123',
@@ -102,11 +118,17 @@ RSpec.describe Ps::Commons::Contract do
         )
       end
 
-      it do
-        expect(subject).to have_attributes(
-          count: 123,
-          order: :desc
-        )
+      describe 'did opts change?' do
+        subject { opts }
+
+        before { evaluator_apply }
+
+        it do
+          expect(subject).to have_attributes(
+            count: 123,
+            order: :desc
+          )
+        end
       end
     end
   end

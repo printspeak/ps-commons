@@ -21,8 +21,8 @@ RSpec.describe Ps::Commons::BaseCommand do
         end
       end
 
-      describe '#contract.valid?' do
-        subject { command.run(**opts).contract.valid? }
+      describe '.valid?' do
+        subject { command.run(**opts).valid? }
 
         it { is_expected.to be true }
       end
@@ -51,8 +51,8 @@ RSpec.describe Ps::Commons::BaseCommand do
 
         it { is_expected.to eq(name: 'John', page_size: 10) }
 
-        describe '#contract.valid?' do
-          subject { command.run(**opts).contract.valid? }
+        describe '.valid?' do
+          subject { command.run(**opts).valid? }
 
           it { is_expected.to be true }
         end
@@ -67,8 +67,8 @@ RSpec.describe Ps::Commons::BaseCommand do
       context 'when required option not provided' do
         it { is_expected.to be_nil }
 
-        describe '#contract.valid?' do
-          subject { command.run(**opts).contract.valid? }
+        describe '.valid?' do
+          subject { command.run(**opts).valid? }
 
           it { is_expected.to be false }
         end
@@ -93,7 +93,9 @@ RSpec.describe Ps::Commons::BaseCommand do
           end
 
           def call
-            @was_i_set = true
+            @was_i_set = opts.name
+
+            # Only John is successful
             self.success = opts.name == 'John'
           end
         end
@@ -101,21 +103,21 @@ RSpec.describe Ps::Commons::BaseCommand do
 
       context 'when required option not provided' do
         it { is_expected.to have_attributes(success: false, was_i_set: nil) }
-        it { is_expected.not_to be_success }
+        it { is_expected.not_to be_successful }
       end
 
       context 'when required option provided but the call is not successful' do
         let(:opts) { { name: 'Jane' } }
 
-        it { is_expected.to have_attributes(success: false, was_i_set: true) }
-        it { is_expected.not_to be_success }
+        it { is_expected.to have_attributes(success: false, was_i_set: 'Jane') }
+        it { is_expected.not_to be_successful }
       end
 
       context 'when required option provided and the call is successful' do
         let(:opts) { { name: 'John' } }
 
-        it { is_expected.to have_attributes(success: true, was_i_set: true) }
-        it { is_expected.to be_success }
+        it { is_expected.to have_attributes(success: true, was_i_set: 'John') }
+        it { is_expected.to be_successful }
       end
     end
   end
