@@ -1,3 +1,10 @@
+## [0.3.1](https://github.com/printspeak/ps-commons/compare/v0.3.0...v0.3.1) (2022-12-17)
+
+
+### Bug Fixes
+
+* contract split into contract and contract_evaluator ([890544f](https://github.com/printspeak/ps-commons/commit/890544fa52832666e517eefec4425603f9725772))
+
 # [0.3.0](https://github.com/printspeak/ps-commons/compare/v0.2.7...v0.3.0) (2022-12-16)
 
 
