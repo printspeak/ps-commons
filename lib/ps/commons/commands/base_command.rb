@@ -27,8 +27,12 @@ module Ps
 
       def around_call
         @contract_evaluator = contract.apply(opts)
+        instance_eval(&self.class.after_contract_validation) if valid? && self.class.after_contract_validation
         call if valid?
       end
+
+      # success? should go back to valid?
+      # but there should also be specific xxx_valid? such as options_valid? && command_valid?
 
       def valid?
         contract_evaluator.valid?
@@ -52,6 +56,8 @@ module Ps
       end
 
       class << self
+        attr_reader :after_contract_validation
+
         def run(**opts)
           new(**opts).tap(&:around_call)
         end
@@ -62,6 +68,10 @@ module Ps
           @contract = Ps::Commons::Contract.new
           @contract.instance_eval(&block) if block_given?
           @contract
+        end
+
+        def contract_validate(&block)
+          @after_contract_validation = block if block_given?
         end
       end
     end

@@ -40,6 +40,10 @@ RSpec.describe Ps::Commons::BaseCommand do
             attribute :page_size, :int, default: 20
           end
 
+          contract_validate do
+            validation_errors << 'page size must be less than or equal to 20' if opts.page_size > 20
+          end
+
           def call
             @output = { name: opts.name, page_size: opts.page_size }
           end
@@ -77,6 +81,24 @@ RSpec.describe Ps::Commons::BaseCommand do
           subject { command.run(**opts).validation_errors }
 
           it { is_expected.to include('name is required') }
+        end
+      end
+
+      context 'when custom contract validation fails' do
+        let(:opts) { { name: 'John', page_size: 30 } }
+
+        it { is_expected.to be_nil }
+
+        describe '.valid?' do
+          subject { command.run(**opts).valid? }
+
+          it { is_expected.to be false }
+        end
+
+        describe '#validation_errors' do
+          subject { command.run(**opts).validation_errors }
+
+          it { is_expected.to include('page size must be less than or equal to 20') }
         end
       end
     end
