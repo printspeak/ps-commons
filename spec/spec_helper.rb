@@ -5,11 +5,15 @@ require 'bundler/setup'
 require 'simplecov'
 require 'sqlite3'
 
+# require "shoulda/matchers/integrations/rspec"
+
 SimpleCov.start
 
 require 'ps/commons'
 
-# ActiveRecord::Base.establish_connection(adapter: 'sqlite3', database: ':memory:')
+Dir.chdir('spec') do
+  Dir['support/**/*.rb'].sort.each { |file| require_relative file }
+end
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure

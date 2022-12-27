@@ -119,4 +119,4 @@ RSpec/ExampleLength:
     - "**/spec/**/*"
 
 RSpec/MultipleMemoizedHelpers:
-  Max: 5
+  Max: 7

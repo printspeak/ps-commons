@@ -4,8 +4,6 @@
 module Ps
   # Common module contains base classes and modules used by Printspeak
   module Commons
-    ContractAttribute = Struct.new(:name, :type, :default, :validations)
-
     # Contract evaluator class enforces attribute validation rules
     #
     # Contract vs ContractEvaluator
