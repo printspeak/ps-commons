@@ -1,3 +1,10 @@
+# [0.5.0](https://github.com/printspeak/ps-commons/compare/v0.4.0...v0.5.0) (2022-12-28)
+
+
+### Features
+
+* add args (based on active model) ([11643f3](https://github.com/printspeak/ps-commons/commit/11643f34bedc8ae768df96c657380333641b0a34))
+
 # [0.4.0](https://github.com/printspeak/ps-commons/compare/v0.3.1...v0.4.0) (2022-12-22)
 
 
