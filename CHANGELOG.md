@@ -1,3 +1,10 @@
+## [0.5.1](https://github.com/printspeak/ps-commons/compare/v0.5.0...v0.5.1) (2022-12-28)
+
+
+### Bug Fixes
+
+* add attach_args and backward compatibility for query and presenter ([11e3f21](https://github.com/printspeak/ps-commons/commit/11e3f21295e271268e8cce75d53e32797b91a19d))
+
 # [0.5.0](https://github.com/printspeak/ps-commons/compare/v0.4.0...v0.5.0) (2022-12-28)
 
 
