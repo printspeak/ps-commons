@@ -104,7 +104,7 @@ Style/OpenStructUse:
 
 # RSpec Cops
 RSpec/NestedGroups:
-  Max: 5
+  Max: 6
 
 RSpec/FilePath:
   Exclude:

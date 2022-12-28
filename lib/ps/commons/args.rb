@@ -4,15 +4,30 @@
 module Ps
   # Common module contains base classes and modules used by Printspeak
   module Commons
-    # Args is a base class for query, presenter and command specific input parameters
+    # Args is an in memory model for passing arguments to queries, presenters and commands.
     #
     # It uses ActiveModel under the hood and so will feel familiar to Rails developers.
+    #
+    # Of course, you can use active model validations, attributes, initializer assignment, callbacks, etc directly
+    # on your query, presenter or command classes. But this way there is a clear separation of concerns, providing
+    # composition over inheritance.
+    #
+    # For example:
+    # A class like a presenter has both inputs and outputs, and if you use ActiveModel directly, you would have no
+    # clear way to separate the two. But with Args, you can define separate contracts for inputs and outputs.
     class Args
       # include ActiveModel::API
       # extend ActiveSupport::Concern
+      # Introduce Rails 5 attribute methods
       include ActiveModel::Attributes
+
+      # Accept constructor arguments as a hash and assign them to writable accessors (attr_accessor, attr_writer or attribute)
       include ActiveModel::AttributeAssignment
+
+      # Add standard ActiveModel validations
       include ActiveModel::Validations
+
+      # Add JSON serialization
       include ActiveModel::Serializers::JSON
       # include ActiveModel::Conversion
 
@@ -43,10 +58,6 @@ module Ps
           klass.class_eval(&block)
 
           klass
-        end
-
-        def create(arg_class, **opts)
-          arg_class.new(**opts)
         end
       end
     end
