@@ -5,6 +5,7 @@ class SomeTable < ActiveRecord::Base
 
   connection.create_table :some_tables do |t|
     t.string :name
+    t.float :price
   end
 end
 
@@ -33,6 +34,34 @@ end
 
 class LambdaDrivenQuery < NoScopeQuery
   default_scope { SomeTable.where.not(os: nil) }
+end
+
+class ArgsDrivenQuery < NoScopeQuery
+  default_scope :some_table
+
+  args do
+    attribute :name
+    attribute :price, type: :float, default: 50.0
+  end
+
+  def call
+    self.scope = scope.where(name: args.name) if args.name.present?
+    self.scope = scope.where(price: args.price)
+  end
+end
+
+class BackwardCompatibleQuery < NoScopeQuery
+  default_scope :some_table
+
+  contract do
+    attribute :name
+    attribute :price, type: :float, default: 50.0
+  end
+
+  def call
+    self.scope = scope.where(name: opts.name) if opts.name.present?
+    self.scope = scope.where(price: opts.price)
+  end
 end
 
 RSpec.describe Ps::Commons::Query do
@@ -84,6 +113,24 @@ RSpec.describe Ps::Commons::Query do
           let(:run_query) { LambdaDrivenQuery.query_as_scope(**params) }
 
           it { is_expected.to eq('SELECT some_tables.* FROM some_tables WHERE some_tables.os IS NOT NULL') }
+        end
+      end
+    end
+
+    [ArgsDrivenQuery, BackwardCompatibleQuery].each do |query_class|
+      context 'when configured with options' do
+        subject { run_query.to_sql.squeeze(' ').gsub('"', '').gsub('(', '').gsub(')', '') }
+
+        let(:run_query) { query_class.query_as_scope(**params) }
+
+        context 'when no options are passed in' do
+          it { is_expected.to eq('SELECT some_tables.* FROM some_tables WHERE some_tables.price = 50.0') }
+        end
+
+        context 'when options are passed in' do
+          let(:params) { { name: 'test', price: 60 } }
+
+          it { is_expected.to eq("SELECT some_tables.* FROM some_tables WHERE some_tables.name = 'test' AND some_tables.price = 60.0") }
         end
       end
     end

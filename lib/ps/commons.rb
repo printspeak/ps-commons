@@ -4,6 +4,7 @@ require 'active_record'
 
 require 'ps/commons/version'
 require 'ps/commons/args'
+require 'ps/commons/attach_args'
 require 'ps/commons/contract'
 require 'ps/commons/contract_evaluator'
 require 'ps/commons/queries/aggregate_query_builder'

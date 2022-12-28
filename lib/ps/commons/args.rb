@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-# NOTE: Should this class be renamed to ArgsContract or some other name to be more specific and description?
 module Ps
   # Common module contains base classes and modules used by Printspeak
   module Commons
@@ -55,7 +54,7 @@ module Ps
             ActiveModel::Name.new(self, nil, name)
           end
 
-          klass.class_eval(&block)
+          klass.class_eval(&block) if block_given?
 
           klass
         end

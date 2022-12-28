@@ -8,11 +8,12 @@ module Ps
     # You implement the call method to set your outputs.
     # If you mark an output as required, then it will raise an error if it is not set in your call method.
     class BasePresenter
-      # Store the options passed to the presenter in an OpenStruct
-      attr_reader :opts
+      include Ps::Commons::AttachArgs
 
-      # Define the **options based contract for passing data to the presenter
-      attr_accessor :contract
+      # backward compatibility, if you encounter opts, convert to args
+      def opts
+        args
+      end
 
       # Define the outputs for the presenter
       attr_accessor :output_contract
@@ -26,10 +27,8 @@ module Ps
       # If you use positional args, you would define an initialize method in your presenter to handle them.
       # If you use keyword args, you would define a contract in your presenter to handle them.
       def initialize(*_args, **opts)
-        @contract = self.class.contract
+        @args = self.class.args.new(**opts)
         @output_contract = extract_output_contract
-
-        @opts = OpenStruct.new(opts)
         @outputs = default_outputs
       end
 
@@ -50,7 +49,7 @@ module Ps
       end
 
       def validate_inputs
-        contract&.apply(opts)
+        args.valid?
       end
 
       def required_outputs
@@ -77,14 +76,8 @@ module Ps
           new(*args, **opts).around_call
         end
 
-        # Need to think about this name 'contract' could it be options or params in the future?
-        # Look at dry-initializer and dry-core for naming guidance
         def contract(&block)
-          return @contract if defined? @contract
-
-          @contract = Ps::Commons::Contract.new
-          @contract.instance_eval(&block) if block_given?
-          @contract
+          args(&block)
         end
 
         def outputs(*outputs, required: false)

@@ -12,9 +12,14 @@ module Ps
     # https://mkdev.me/en/posts/how-to-use-query-objects-to-refactor-rails-sql-queries
     # https://github.com/RichOrElse/query_delegator
     class Query
+      include Ps::Commons::AttachArgs
+
       attr_accessor :scope
-      attr_reader :opts
-      attr_accessor :contract
+
+      # backward compatibility, if you encounter opts, convert to args
+      def opts
+        args
+      end
 
       class << self
         # Run the query and return the query instance
@@ -49,19 +54,15 @@ module Ps
                    end
         end
 
+        # backward compatibility, if you encounter contract, convert to args
         def contract(&block)
-          return @contract if defined? @contract
-
-          @contract = Ps::Commons::Contract.new
-          @contract.instance_eval(&block) if block_given?
-          @contract
+          args(&block)
         end
       end
 
       def initialize(scope, **opts)
-        @contract = self.class.contract
         @scope = scope || self.class.scope
-        @opts  = OpenStruct.new(opts)
+        @args = self.class.args.new(**opts)
         raise ArgumentError, 'scope is required' if @scope.nil?
       end
 

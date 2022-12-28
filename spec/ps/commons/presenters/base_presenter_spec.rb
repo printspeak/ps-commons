@@ -118,7 +118,7 @@ RSpec.describe Ps::Commons::BasePresenter do
           contract do
             attribute :critter1
             attribute :critter2
-            attribute :page_size, :int, default: 20
+            attribute :page_size, :integer, default: 20
           end
 
           def call
