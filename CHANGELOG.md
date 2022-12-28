@@ -1,3 +1,10 @@
+# [0.4.0](https://github.com/printspeak/ps-commons/compare/v0.3.1...v0.4.0) (2022-12-22)
+
+
+### Features
+
+* add support for custom validation ([c910f18](https://github.com/printspeak/ps-commons/commit/c910f1857993cd76e6210b7c8335e93ed5396f59))
+
 ## [0.3.1](https://github.com/printspeak/ps-commons/compare/v0.3.0...v0.3.1) (2022-12-17)
 
 
