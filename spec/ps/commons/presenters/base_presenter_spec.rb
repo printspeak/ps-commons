@@ -150,6 +150,7 @@ RSpec.describe Ps::Commons::BasePresenter do
 
           def call
             return unless args.valid?
+
             self.required_output = "The quick #{args.fox_color} Fox jumped over the lazy Dog"
           end
         end
