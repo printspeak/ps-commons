@@ -33,7 +33,8 @@ module Ps
       end
 
       def around_call
-        validate_inputs
+        # just ensuring that the args are valid, but still allows call where you can interrogate the args
+        args.valid?
         call
         validate_outputs
 
@@ -46,10 +47,6 @@ module Ps
         required_outputs.each do |output|
           raise ArgumentError, "#{self.class} missing required output '#{output}'" if @outputs[output].nil?
         end
-      end
-
-      def validate_inputs
-        args.valid?
       end
 
       def required_outputs

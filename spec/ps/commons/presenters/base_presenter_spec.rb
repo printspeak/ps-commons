@@ -103,6 +103,7 @@ RSpec.describe Ps::Commons::BasePresenter do
         end
       end
 
+      # Would be better to use outputs do ... end
       it {
         expect(subject).to be_a(OpenStruct).and have_attributes(required_output: 'Bob Marley', optional_output: nil)
       } # , optional_output: nil).  THIS DOES NOT WORK, THERE is BUG that needs to be handled via class inheritance
@@ -110,7 +111,68 @@ RSpec.describe Ps::Commons::BasePresenter do
       it { expect(subject.optional_output).to be_nil }
     end
 
-    context 'with an options contract' do
+    context 'with an args' do
+      subject { presenter.present(critter1: 'Fox', critter2: 'Dog') }
+
+      let(:presenter) do
+        Class.new(FakePresenter) do
+          args do
+            attribute :critter1
+            attribute :critter2
+            attribute :page_size, :integer, default: 20
+          end
+
+          def call
+            self.optional_output = args.page_size
+            self.required_output = "The quick brown #{args.critter1} jumped over the lazy #{args.critter2}"
+          end
+        end
+      end
+
+      it do
+        expect(subject)
+          .to be_a(OpenStruct)
+          .and have_attributes(required_output: 'The quick brown Fox jumped over the lazy Dog')
+          .and have_attributes(optional_output: 20)
+      end
+    end
+
+    context 'with an argument validation' do
+      subject { presenter.present(fox_color: 'blue') }
+
+      let(:presenter) do
+        Class.new(FakePresenter) do
+          args do
+            attribute :fox_color
+
+            validates :fox_color, inclusion: { in: %w[red green blue] }
+          end
+
+          def call
+            return unless args.valid?
+            self.required_output = "The quick #{args.fox_color} Fox jumped over the lazy Dog"
+          end
+        end
+      end
+
+      it do
+        expect(subject)
+          .to be_a(OpenStruct)
+          .and have_attributes(required_output: 'The quick blue Fox jumped over the lazy Dog')
+          .and have_attributes(optional_output: nil)
+      end
+
+      context 'with invalid argument' do
+        subject { presenter.present(fox_color: 'purple') }
+
+        # ActiveModel::ValidationError would be a better error
+        it do
+          expect { subject }.to raise_error(ArgumentError)
+        end
+      end
+    end
+
+    context 'with an contract (backward compatibility - use args instead)' do
       subject { presenter.present(critter1: 'Fox', critter2: 'Dog') }
 
       let(:presenter) do
@@ -123,7 +185,7 @@ RSpec.describe Ps::Commons::BasePresenter do
 
           def call
             self.optional_output = opts.page_size
-            self.required_output = "The quick brow #{opts.critter1} jumped over the lazy #{opts.critter2}"
+            self.required_output = "The quick brown #{opts.critter1} jumped over the lazy #{opts.critter2}"
           end
         end
       end
@@ -131,7 +193,7 @@ RSpec.describe Ps::Commons::BasePresenter do
       it do
         expect(subject)
           .to be_a(OpenStruct)
-          .and have_attributes(required_output: 'The quick brow Fox jumped over the lazy Dog')
+          .and have_attributes(required_output: 'The quick brown Fox jumped over the lazy Dog')
           .and have_attributes(optional_output: 20)
       end
     end
