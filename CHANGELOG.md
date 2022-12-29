@@ -1,3 +1,11 @@
+## [0.5.2](https://github.com/printspeak/ps-commons/compare/v0.5.1...v0.5.2) (2022-12-29)
+
+
+### Bug Fixes
+
+* add support for typed and validated args to presenter ([8c7fe14](https://github.com/printspeak/ps-commons/commit/8c7fe14f217cf0b8b5f1e1f456afa1f6e27f2243))
+* add support for typed and validated args to presenter ([03b2f8c](https://github.com/printspeak/ps-commons/commit/03b2f8c9d785f953b76ce65a64520601b1badb5d))
+
 ## [0.5.1](https://github.com/printspeak/ps-commons/compare/v0.5.0...v0.5.1) (2022-12-28)
 
 
