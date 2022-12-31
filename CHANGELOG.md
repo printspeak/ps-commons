@@ -1,3 +1,10 @@
+## [0.5.3](https://github.com/printspeak/ps-commons/compare/v0.5.2...v0.5.3) (2022-12-31)
+
+
+### Bug Fixes
+
+* add support for arg and command level validation ([7ad02dd](https://github.com/printspeak/ps-commons/commit/7ad02dd2a6de490537b9dceb59942e3d94b2a82e))
+
 ## [0.5.2](https://github.com/printspeak/ps-commons/compare/v0.5.1...v0.5.2) (2022-12-29)
 
 
