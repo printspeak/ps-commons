@@ -167,6 +167,7 @@ RSpec.describe Ps::Commons::BasePresenter do
         subject { presenter.present(fox_color: 'purple') }
 
         # ActiveModel::ValidationError would be a better error
+        # Currently the outputs will throw an ArgumentError if they are missing a required value
         it do
           expect { subject }.to raise_error(ArgumentError)
         end

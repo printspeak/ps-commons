@@ -1,51 +1,100 @@
 # frozen_string_literal: true
 
+class PageSizeValidator < ActiveModel::Validator
+  def validate(record)
+    return unless record.page_size > 20
+
+    record.errors.add :base, 'page size must be less than or equal to 20'
+  end
+end
+
 RSpec.describe Ps::Commons::BaseCommand do
+  shared_examples 'args valid?' do
+    it { expect(run_command.args).to be_valid }
+    it { expect(run_command.args.errors.full_messages).to be_empty }
+  end
+
+  shared_examples 'args invalid?' do |error_message|
+    it { expect(run_command.args).to be_invalid }
+    it { expect(run_command.args.errors.full_messages).to include(error_message) }
+  end
+
+  shared_examples 'command valid?' do
+    it { expect(run_command).to be_valid }
+    it { expect(run_command.errors.full_messages).to be_empty }
+  end
+
+  shared_examples 'command invalid?' do |error_message|
+    it { expect(run_command).to be_invalid }
+    it { expect(run_command.errors.full_messages).to include(error_message) }
+  end
+
+  shared_examples 'command success?' do
+    it { expect(run_command).to be_success }
+  end
+
+  shared_examples 'command failure?' do
+    it { expect(run_command).to be_failure }
+  end
+
   let(:opts) { {} }
 
   describe '#run' do
-    subject { command.run(**opts) }
+    subject { run_command }
 
-    context 'when misconfigured' do
-      context 'with missing call method' do
-        let(:command) { Class.new(described_class) }
+    let(:run_command) { command.run(**opts) }
 
-        it { expect { subject }.to raise_error NoMethodError, 'implement the call method in your command object' }
-      end
+    context 'when command is missing call method' do
+      let(:command) { Class.new(described_class) }
+
+      it { expect { subject }.to raise_error NoMethodError, 'implement the call method in your command object' }
     end
 
-    context 'when contract is not defined' do
-      let(:command) do
-        Class.new(described_class) do
-          def call; end
-        end
-      end
-
-      describe '.valid?' do
-        subject { command.run(**opts).valid? }
-
-        it { is_expected.to be true }
-      end
-    end
-
-    context 'when contract is defined' do
-      subject { command.run(**opts).output }
-
+    context 'when args is not defined' do
       let(:command) do
         Class.new(described_class) do
           attr_reader :output
 
-          contract do
-            attribute :name, required: true
-            attribute :page_size, :int, default: 20
+          def call
+            @output = 'hello'
+          end
+        end
+      end
+
+      it_behaves_like 'args valid?'
+      it_behaves_like 'command valid?'
+      it_behaves_like 'command success?'
+
+      it { is_expected.to have_attributes(output: 'hello') }
+    end
+
+    context 'when args are defined' do
+      subject { run_command }
+
+      let(:command) do
+        Class.new(described_class) do
+          # Argument definition and validation
+          args do
+            attribute :name
+            attribute :page_size, :integer, default: 20
+            attribute :dry_run, :boolean, default: false
+
+            validates :name, presence: true
+            validates_with PageSizeValidator
           end
 
-          contract_validate do
-            validation_errors << 'page size must be less than or equal to 20' if opts.page_size > 20
-          end
+          # Command definition and validation
+          attr_reader :output
+
+          # this validation is specifically to help test invalid commands
+          validates :output, presence: true, if: -> { args.valid? }
 
           def call
-            @output = { name: opts.name, page_size: opts.page_size }
+            return if args.invalid?
+
+            return if args.dry_run
+
+            @output = { name: args.name, page_size: args.page_size }
           end
         end
       end
@@ -53,93 +102,51 @@ RSpec.describe Ps::Commons::BaseCommand do
       context 'when all options provided' do
         let(:opts) { { name: 'John', page_size: 10 } }
 
-        it { is_expected.to eq(name: 'John', page_size: 10) }
+        it_behaves_like 'args valid?'
+        it_behaves_like 'command valid?'
+        it_behaves_like 'command success?'
 
-        describe '.valid?' do
-          subject { command.run(**opts).valid? }
-
-          it { is_expected.to be true }
-        end
+        it { is_expected.to have_attributes(output: { name: 'John', page_size: 10 }) }
       end
 
-      context 'when only required option provided' do
+      context 'when required option provided' do
         let(:opts) { { name: 'John' } }
 
-        it { is_expected.to eq(name: 'John', page_size: 20) }
+        it_behaves_like 'args valid?'
+        it_behaves_like 'command valid?'
+        it_behaves_like 'command success?'
+
+        it { is_expected.to have_attributes(output: { name: 'John', page_size: 20 }) }
       end
 
-      context 'when required option not provided' do
-        it { is_expected.to be_nil }
+      context 'when argument validation fails - name is missing' do
+        let(:opts) { { page_size: 10 } }
 
-        describe '.valid?' do
-          subject { command.run(**opts).valid? }
+        it_behaves_like 'args invalid?', "Name can't be blank"
+        it_behaves_like 'command valid?'
+        it_behaves_like 'command failure?'
 
-          it { is_expected.to be false }
-        end
-
-        describe '#validation_errors' do
-          subject { command.run(**opts).validation_errors }
-
-          it { is_expected.to include('name is required') }
-        end
+        it { is_expected.to have_attributes(output: nil) }
       end
 
-      context 'when custom contract validation fails' do
+      context 'when argument validation fails - invalid page size' do
         let(:opts) { { name: 'John', page_size: 30 } }
 
-        it { is_expected.to be_nil }
+        it_behaves_like 'args invalid?', 'page size must be less than or equal to 20'
+        it_behaves_like 'command valid?'
+        it_behaves_like 'command failure?'
 
-        describe '.valid?' do
-          subject { command.run(**opts).valid? }
-
-          it { is_expected.to be false }
-        end
-
-        describe '#validation_errors' do
-          subject { command.run(**opts).validation_errors }
-
-          it { is_expected.to include('page size must be less than or equal to 20') }
-        end
-      end
-    end
-
-    describe '#success?' do
-      subject { command.run(**opts) }
-
-      let(:command) do
-        Class.new(described_class) do
-          attr_reader :was_i_set
-
-          contract do
-            attribute :name, required: true
-          end
-
-          def call
-            @was_i_set = opts.name
-
-            # Only John is successful
-            self.success = opts.name == 'John'
-          end
-        end
+        it { is_expected.to have_attributes(output: nil) }
       end
 
-      context 'when required option not provided' do
-        it { is_expected.to have_attributes(success: false, was_i_set: nil) }
-        it { is_expected.not_to be_successful }
-      end
+      context 'when arguments are valid, but the command is invalid' do
+        let(:opts) { { name: 'John', dry_run: true } }
 
-      context 'when required option provided but the call is not successful' do
-        let(:opts) { { name: 'Jane' } }
+        it_behaves_like 'args valid?'
+        it_behaves_like 'command invalid?', "Output can't be blank"
+        it_behaves_like 'command failure?'
 
-        it { is_expected.to have_attributes(success: false, was_i_set: 'Jane') }
-        it { is_expected.not_to be_successful }
-      end
-
-      context 'when required option provided and the call is successful' do
-        let(:opts) { { name: 'John' } }
-
-        it { is_expected.to have_attributes(success: true, was_i_set: 'John') }
-        it { is_expected.to be_successful }
+        it { is_expected.to have_attributes(output: nil) }
       end
     end
   end
